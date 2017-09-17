@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Unblock Imgur",
+  "description": "Loads Imgur images from DuckDuckGo image results page and CORS Anywhere proxy",
+  "version": "0.1",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "jquery.min.js",
+        "content.js"
+      ]
+    }
+  ],
+  "background": {
+    "matches": [
+      "*://i.imgur.com/*"
+    ],
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
