@@ -1,12 +1,17 @@
 {
   "manifest_version": 2,
   "name": "Unblock Imgur",
-  "description": "Loads Imgur images from DuckDuckGo image results page and CORS Anywhere proxy",
-  "version": "0.1",
+  "description": "Loads Imgur content from DuckDuckGo proxy with basic functionality",
+  "version": "0.2",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "*://proxy.duckduckgo.com/*"
       ],
       "js": [
         "jquery.min.js",
@@ -15,14 +20,15 @@
     }
   ],
   "background": {
-    "matches": [
-      "*://i.imgur.com/*"
-    ],
     "scripts": [
+      "jquery.min.js",
       "background.js"
     ]
   },
   "permissions": [
-    "tabs"
+    "webRequest",
+    "webRequestBlocking",
+    "*://*.imgur.com/*",
+    "*://proxy.duckduckgo.com/*"
   ]
 }
