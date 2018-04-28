@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Unblock Imgur",
   "description": "Loads Imgur content from DuckDuckGo proxy with basic functionality",
-  "version": "0.2",
+  "version": "0.2.1",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
