@@ -1,6 +1,8 @@
 // Redirect imgur.com requests to Duckduckgo proxy
 chrome.webRequest.onBeforeRequest.addListener(function (details) {
-    return {redirectUrl: "https://proxy.duckduckgo.com/iu/?u=" + details.url};
+    var redirectUrl = "https://proxy.duckduckgo.com/iu/?u=" + details.url;
+    redirectUrl = redirectUrl.replace(/ref=.*&|ref=.*$/, "");
+    return {redirectUrl: redirectUrl};
 }, {
     urls: ["*://*.imgur.com/*"]
 }, ["blocking"]);
