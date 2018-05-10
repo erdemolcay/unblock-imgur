@@ -32,8 +32,8 @@ chrome.webRequest.onHeadersReceived.addListener(function (details) {
         lastIndex = index;
     });
 
-    // if this is an image, set a proper filename
-    if (contentType.startsWith("image/")) {
+    // if this is an image or video, set a proper filename
+    if (contentType.startsWith("image/") || contentType.startsWith("video/")) {
         details.responseHeaders[lastIndex + 1] = {
             name: "content-disposition",
             value: "filename=" + details.url.split('/').pop()
