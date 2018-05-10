@@ -9,7 +9,6 @@ chrome.webRequest.onBeforeRequest.addListener(function (details) {
     urls: ["*://*.imgur.com/*"]
 }, ["blocking"]);
 
-// Modify valid JS sources when imgur page loads from Duckduckgo proxy
 chrome.webRequest.onHeadersReceived.addListener(function (details) {
     // If HTTP status is not OK, try again
     if (details.frameId === 0 && details.statusCode !== 200 && reloadCount < 2) {
@@ -17,12 +16,32 @@ chrome.webRequest.onHeadersReceived.addListener(function (details) {
         reloadCount++;
     }
 
+    var contentType = '';
+    var lastIndex = 0;
     $.each(details.responseHeaders, function (index, item) {
+        // Modify valid JS sources when imgur page loads from Duckduckgo proxy
         if (item.name === "content-security-policy" && item.value.indexOf("script-src") >= 0) {
             details.responseHeaders[index].value = "script-src self http: https: about: 'unsafe-inline' 'unsafe-eval'";
         }
+
+        // Get content type
+        if (item.name === "content-type") {
+            contentType = item.value;
+        }
+
+        lastIndex = index;
     });
+
+    // if this is an image, set a proper filename
+    if (contentType.startsWith("image/")) {
+        details.responseHeaders[lastIndex + 1] = {
+            name: "content-disposition",
+            value: "filename=" + details.url.split('/').pop()
+        };
+    }
+
     return {responseHeaders: details.responseHeaders};
+
 }, {
     urls: [
         "*://proxy.duckduckgo.com/iu/?u=http://imgur.com*",
