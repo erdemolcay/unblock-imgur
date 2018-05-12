@@ -13,7 +13,13 @@ chrome.webRequest.onHeadersReceived.addListener(function (details) {
     // If HTTP status is not OK, try again
     if (details.frameId === 0 && details.statusCode !== 200 && reloadCount < 2) {
         var code = 'window.location.reload();';
-        chrome.tabs.executeScript(details.tabId, {code: code});
+        chrome.tabs.executeScript(
+            details.tabId,
+            {code: code},
+            function (results) {
+                var e = chrome.runtime.lastError;
+            }
+        );
         reloadCount++;
     }
 
