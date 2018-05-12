@@ -12,7 +12,8 @@ chrome.webRequest.onBeforeRequest.addListener(function (details) {
 chrome.webRequest.onHeadersReceived.addListener(function (details) {
     // If HTTP status is not OK, try again
     if (details.frameId === 0 && details.statusCode !== 200 && reloadCount < 2) {
-        chrome.tabs.reload(details.tabId);
+        var code = 'window.location.reload();';
+        chrome.tabs.executeScript(details.tabId, {code: code});
         reloadCount++;
     }
 
