@@ -2,7 +2,7 @@ var reloadCount = 0;
 
 // Redirect imgur.com requests to Duckduckgo proxy
 chrome.webRequest.onBeforeRequest.addListener(function (details) {
-    var redirectUrl = "https://proxy.duckduckgo.com/iu/?u=" + details.url.replace(https, http);
+    var redirectUrl = "https://proxy.duckduckgo.com/iu/?u=" + details.url.replace("https://", "http://");
     redirectUrl = redirectUrl.replace(/ref=.*&|ref=.*$/, "");
     return {redirectUrl: redirectUrl};
 }, {
