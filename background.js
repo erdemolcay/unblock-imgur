@@ -1,59 +1,9 @@
-var reloadCount = 0;
-
-// Redirect imgur.com requests to Duckduckgo proxy
 chrome.webRequest.onBeforeRequest.addListener(function (details) {
-    var redirectUrl = "https://proxy.duckduckgo.com/iu/?u=" + details.url.replace("https://", "http://");
-    redirectUrl = redirectUrl.replace(/ref=.*&|ref=.*$/, "");
-    return {redirectUrl: redirectUrl};
+	if(details.url.indexOf('imgur.com')>-1)
+	{
+    return {redirectUrl: details.url.replace("imgur.com", "imgur.icu")}
+	}
 }, {
-    urls: ["*://*.imgur.com/*"]
+    urls: ["<all_urls>"],
+	types : ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket", "other"]
 }, ["blocking"]);
-
-chrome.webRequest.onHeadersReceived.addListener(function (details) {
-    // If HTTP status is not OK, try again
-    if (details.frameId === 0 && details.statusCode !== 200 && reloadCount < 2) {
-        var code = 'window.location.reload();';
-        chrome.tabs.executeScript(
-            details.tabId,
-            {code: code},
-            function (results) {
-                var e = chrome.runtime.lastError;
-            }
-        );
-        reloadCount++;
-    }
-
-    var contentType = '';
-    var lastIndex = 0;
-    $.each(details.responseHeaders, function (index, item) {
-        // Modify valid JS sources when imgur page loads from Duckduckgo proxy
-        if (item.name === "content-security-policy" && item.value.indexOf("script-src") >= 0) {
-            details.responseHeaders[index].value = "script-src self http: https: about: 'unsafe-inline' 'unsafe-eval'";
-        }
-
-        // Get content type
-        if (item.name === "content-type") {
-            contentType = item.value;
-        }
-
-        lastIndex = index;
-    });
-
-    // if this is an image or video, set a proper filename
-    if (contentType.startsWith("image/") || contentType.startsWith("video/")) {
-        details.responseHeaders[lastIndex + 1] = {
-            name: "content-disposition",
-            value: "filename=" + details.url.split('/').pop()
-        };
-    }
-
-    return {responseHeaders: details.responseHeaders};
-
-}, {
-    urls: [
-        "*://proxy.duckduckgo.com/iu/?u=http://imgur.com*",
-        "*://proxy.duckduckgo.com/iu/?u=https://imgur.com*",
-        "*://proxy.duckduckgo.com/iu/?u=http://*.imgur.com*",
-        "*://proxy.duckduckgo.com/iu/?u=https://*.imgur.com*",
-    ]
-}, ["responseHeaders", "blocking"]);
